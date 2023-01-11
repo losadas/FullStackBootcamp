@@ -7,9 +7,13 @@ const Button = ({ textButton, action }) => {
 };
 
 const Statistics = ({ nombre, num }) => {
+  let sym = ''
+  if(nombre === 'Positive'){
+    sym = '%'
+  }
   return (
     <h2>
-      {nombre} {num}
+      {nombre} {num} {sym}
     </h2>
   );
 };
@@ -31,6 +35,13 @@ const App = () => {
     setBad(bad + 1)
   };
 
+  const all = good + neutral + bad
+  let pos = 0
+  if(good !== 0){
+    pos = (good/all) * 100
+  }
+  
+
   return (
     <>
       <h1>Give Feedback</h1>
@@ -41,6 +52,8 @@ const App = () => {
       <Statistics nombre="Good" num={good} />
       <Statistics nombre="Neutral" num={neutral} />
       <Statistics nombre="Bad" num={bad} />
+      <Statistics nombre="All" num={all} />
+      <Statistics nombre="Positive" num={pos} />
     </>
   );
 };
