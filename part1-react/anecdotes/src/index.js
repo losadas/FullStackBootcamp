@@ -17,6 +17,10 @@ const App = (props) => {
     setSelected(random);
   };
 
+  let vot = Math.max(...poin) !== 0
+  let newa = [...poin]
+  let may = newa.indexOf(Math.max(...poin))
+
   const handleVote = () => {
     let newArr = [...poin]
     newArr[selected] = newArr[selected] + 1
@@ -25,10 +29,18 @@ const App = (props) => {
 
   return (
     <>
+      <h1>Anecdote of the day</h1>
       <div>{props.anecdotes[selected]}</div>
       <div>has {poin[selected]} votes</div>
       <Button action={handleVote} nom='Vote'/>
       <Button action={handleOnClick} nom='Next Anecdote' />
+      {vot &&
+      <div>
+        <h1>Anecdote with most votes</h1>
+        <p>{props.anecdotes[may]}</p>
+      </div> 
+      }
+
     </>
   );
 };
