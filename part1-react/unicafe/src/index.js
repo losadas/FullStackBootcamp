@@ -7,14 +7,21 @@ const Button = ({ textButton, action }) => {
 };
 
 const Statistics = ({ nombre, num }) => {
-  let sym = ''
-  if(nombre === 'Positive'){
-    sym = '%'
+  let sym = "";
+  if (nombre === "Positive") {
+    sym = "%";
   }
   return (
-    <h2>
-      {nombre} {num} {sym}
-    </h2>
+    <table>
+      <tbody>
+        <tr>
+          <td>{nombre}</td>
+          <td>
+            {num} {sym}
+          </td>
+        </tr>
+      </tbody>
+    </table>
   );
 };
 
@@ -24,23 +31,22 @@ const App = () => {
   const [bad, setBad] = useState(0);
 
   const handleGood = () => {
-    setGood(good + 1)
+    setGood(good + 1);
   };
 
   const handleNeutral = () => {
-    setNeutral(neutral + 1)
+    setNeutral(neutral + 1);
   };
 
   const handleBad = () => {
-    setBad(bad + 1)
+    setBad(bad + 1);
   };
 
-  const all = good + neutral + bad
-  let pos = 0
-  if(good !== 0){
-    pos = (good/all) * 100
+  const all = good + neutral + bad;
+  let pos = 0;
+  if (good !== 0) {
+    pos = (good / all) * 100;
   }
-  
 
   return (
     <>
@@ -49,11 +55,17 @@ const App = () => {
       <Button action={handleNeutral} textButton="Neutral" />
       <Button action={handleBad} textButton="Bad" />
       <h1>Statistics</h1>
-      <Statistics nombre="Good" num={good} />
-      <Statistics nombre="Neutral" num={neutral} />
-      <Statistics nombre="Bad" num={bad} />
-      <Statistics nombre="All" num={all} />
-      <Statistics nombre="Positive" num={pos} />
+      {good === 0 && neutral === 0 && bad === 0 ? (
+        <h2>No Feedback Given</h2>
+      ) : (
+        <>
+          <Statistics nombre="Good" num={good} />
+          <Statistics nombre="Neutral" num={neutral} />
+          <Statistics nombre="Bad" num={bad} />
+          <Statistics nombre="All" num={all} />
+          <Statistics nombre="Positive" num={pos} />
+        </>
+      )}
     </>
   );
 };
