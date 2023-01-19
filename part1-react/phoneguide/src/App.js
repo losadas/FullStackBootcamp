@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import Filter from "./components/Filter";
 import Form from "./components/Form";
 import List from "./components/List";
+import api from "./services/api";
 import axios from "axios";
 
 function App() {
   useEffect(() => {
-    axios.get("http://localhost:5000/persons").then((response) => {
-      setPersons(response.data)
+    api.getAll().then((response) => {
+      setPersons(response.data);
     });
   }, []);
   const [persons, setPersons] = useState([]);
@@ -31,16 +32,46 @@ function App() {
     e.preventDefault();
     const exist = persons.some((e) => e.name === newName);
     if (exist) {
-      alert(`${newName} is already added to phonebook`);
-      setNewName("");
-      setNewNumber("");
-      e.target = <input type="text" value=""></input>;
+      axios.get('http://localhost:5000/persons', {
+        params: {
+          name: newName
+        }
+      }).then(response => {
+        const confirmed = window.confirm(`${newName} ya existe en la agenda, desea actualizar este número?`)
+        if(confirmed){
+          const id = response.data[0].id
+          const puted = { name: newName, number: newNumber }
+          axios.put(`http://localhost:5000/persons/${id}`, puted)
+          .then(() => {
+            api.getAll().then((response) => {
+              setPersons(response.data);
+              setNewName('')
+              setNewNumber('')
+            });
+          })
+        }
+      })
     } else {
       const nuevo = { name: newName, number: newNumber };
-      setPersons([...persons, nuevo]);
-      setNewName("");
-      setNewNumber("");
+      api.create(nuevo).then((response) => {
+        setPersons([...persons, response.data]);
+        setNewName("");
+        setNewNumber("");
+      });
     }
+  };
+
+  const handleErase = (e) => {
+    const id = e.target.id;
+    axios.get(`http://localhost:5000/persons/${id}`).then((response) => {
+      const confirmed = window.confirm(`Desea eliminar a ${response.data.name}`);
+      confirmed && api.erase(id).then(() => {
+        api.getAll().then((response) => {
+          setPersons(response.data);
+        });
+      });
+    });
+    
   };
 
   return (
@@ -53,7 +84,7 @@ function App() {
         newName={newName}
         newNumber={newNumber}
       />
-      <List newFilter={newFilter} persons={persons} />
+      <List newFilter={newFilter} persons={persons} handleErase={handleErase} />
     </>
   );
 }
