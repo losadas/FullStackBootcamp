@@ -15,6 +15,7 @@ function App() {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newFilter, setNewFilter] = useState("");
+  const [error, setNewError] = useState("");
 
   const handleOnChange1 = (e) => {
     setNewName(e.target.value);
@@ -32,25 +33,43 @@ function App() {
     e.preventDefault();
     const exist = persons.some((e) => e.name === newName);
     if (exist) {
-      axios.get('http://localhost:5000/persons', {
-        params: {
-          name: newName
-        }
-      }).then(response => {
-        const confirmed = window.confirm(`${newName} ya existe en la agenda, desea actualizar este número?`)
-        if(confirmed){
-          const id = response.data[0].id
-          const puted = { name: newName, number: newNumber }
-          axios.put(`http://localhost:5000/persons/${id}`, puted)
-          .then(() => {
+      axios
+        .get("http://localhost:5000/persons", {
+          params: {
+            name: newName,
+          },
+        })
+        .then((response) => {
+          const confirmed = window.confirm(
+            `${newName} ya existe en la agenda, desea actualizar este número?`
+          );
+          if (confirmed) {
+            const id = response.data[0].id;
+            const puted = { name: newName, number: newNumber };
+            setNewError('Se ha actualizado correctamente')
+            setTimeout(() => {
+              axios.put(`http://localhost:5000/persons/${id}`, puted).then(() => {
+              api.getAll().then((response) => {
+                setPersons(response.data);
+                setNewName("");
+                setNewNumber("");
+                setNewError('')
+              });
+            });
+            }, 2000)          
+          }
+        })
+        .catch(() => {
+          setNewError("Este contacto ya ha sido eliminado del servidor");
+          setTimeout(() => {
+            setNewError("");
             api.getAll().then((response) => {
               setPersons(response.data);
-              setNewName('')
-              setNewNumber('')
-            });
-          })
-        }
-      })
+              setNewName("");
+              setNewNumber("");
+            });          
+          }, 2000);
+        });
     } else {
       const nuevo = { name: newName, number: newNumber };
       api.create(nuevo).then((response) => {
@@ -64,14 +83,16 @@ function App() {
   const handleErase = (e) => {
     const id = e.target.id;
     axios.get(`http://localhost:5000/persons/${id}`).then((response) => {
-      const confirmed = window.confirm(`Desea eliminar a ${response.data.name}`);
-      confirmed && api.erase(id).then(() => {
-        api.getAll().then((response) => {
-          setPersons(response.data);
+      const confirmed = window.confirm(
+        `Desea eliminar a ${response.data.name}`
+      );
+      confirmed &&
+        api.erase(id).then(() => {
+          api.getAll().then((response) => {
+            setPersons(response.data);
+          });
         });
-      });
     });
-    
   };
 
   return (
@@ -84,6 +105,7 @@ function App() {
         newName={newName}
         newNumber={newNumber}
       />
+      {error !== "" && <h2>{error}</h2>}
       <List newFilter={newFilter} persons={persons} handleErase={handleErase} />
     </>
   );
