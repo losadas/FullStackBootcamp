@@ -34,7 +34,7 @@ function App() {
     const exist = persons.some((e) => e.name === newName);
     if (exist) {
       axios
-        .get("http://localhost:5000/persons", {
+        .get("http://localhost:3001/api/persons", {
           params: {
             name: newName,
           },
@@ -48,7 +48,7 @@ function App() {
             const puted = { name: newName, number: newNumber };
             setNewError('Se ha actualizado correctamente')
             setTimeout(() => {
-              axios.put(`http://localhost:5000/persons/${id}`, puted).then(() => {
+              axios.put(`http://localhost:3001/api/persons/${id}`, puted).then(() => {
               api.getAll().then((response) => {
                 setPersons(response.data);
                 setNewName("");
@@ -82,7 +82,7 @@ function App() {
 
   const handleErase = (e) => {
     const id = e.target.id;
-    axios.get(`http://localhost:5000/persons/${id}`).then((response) => {
+    axios.get(`http://localhost:3001/api/persons/${id}`).then((response) => {
       const confirmed = window.confirm(
         `Desea eliminar a ${response.data.name}`
       );
