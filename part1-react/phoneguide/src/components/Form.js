@@ -5,10 +5,10 @@ const Form = ({ submit, handle1, handle2, newName, newNumber }) => {
       <form onSubmit={submit}>
         <div>
           <label>Name:</label>
-          <input type="text" onChange={handle1} value={newName} />
+          <input type="text" onChange={handle1} value={newName} required/>
           <br />
           <label>Number:</label>
-          <input type="number" onChange={handle2} value={newNumber} />
+          <input type="number" onChange={handle2} value={newNumber} required/>
         </div>
         <button>Add</button>
       </form>

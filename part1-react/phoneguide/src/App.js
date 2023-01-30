@@ -39,24 +39,21 @@ function App() {
             name: newName,
           },
         })
-        .then((response) => {
+        .then(async (response) => {
           const confirmed = window.confirm(
             `${newName} ya existe en la agenda, desea actualizar este número?`
           );
           if (confirmed) {
             const id = response.data[0].id;
             const puted = { name: newName, number: newNumber };
-            setNewError('Se ha actualizado correctamente')
-            setTimeout(() => {
-              axios.put(`http://localhost:3001/api/persons/${id}`, puted).then(() => {
-              api.getAll().then((response) => {
-                setPersons(response.data);
-                setNewName("");
-                setNewNumber("");
-                setNewError('')
-              });
-            });
-            }, 2000)          
+            setNewError('Se ha actualizado correctamente')  
+            await axios.put(`http://localhost:3001/api/persons/${id}`, puted)
+            api.getAll().then((response) => {
+              setPersons(response.data);
+              setNewName("");
+              setNewNumber("");
+              setNewError('')
+            }).catch(err => console.log(err))           
           }
         })
         .catch(() => {
